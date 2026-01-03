@@ -247,12 +247,24 @@ Use the provided backup script to create regular backups:
 ./scripts/backup.sh
 ```
 
-This creates a compressed database backup in `/volume1/NetBackup/paperless` and automatically removes backups older than 30 days.
+This creates a compressed database backup in `/volume1/NetBackup/paperless` (default location) and automatically removes backups older than 30 days.
+
+**Note:** You may need to update the PostgreSQL container name in `scripts/backup.sh`. Docker Compose typically names containers as `<directory-name>-<service-name>-1`. Find your container name with:
+```bash
+docker ps | grep postgres
+```
+
+Then edit the `CONTAINER` variable in `scripts/backup.sh`:
+```bash
+CONTAINER="your-actual-container-name"
+```
 
 **To customize the backup location**, edit `scripts/backup.sh`:
 ```bash
-BACKUP_DIR="/your/backup/path"
+BACKUP_DIR="/your/backup/path"  # Default: /volume1/NetBackup/paperless
 ```
+
+**Note:** Ensure the backup directory exists and has appropriate permissions before running the backup script.
 
 **Automate backups** using Synology Task Scheduler:
 1. Open Control Panel → Task Scheduler
@@ -266,7 +278,12 @@ BACKUP_DIR="/your/backup/path"
 For performance optimization, periodically reindex the database:
 
 ```bash
-./scripts/reindex.sh --container paperless-db-1
+./scripts/reindex.sh --container synology-paperless-compose-db-1
+```
+
+**Note:** Replace `synology-paperless-compose-db-1` with your actual PostgreSQL container name. Find it using:
+```bash
+docker ps | grep postgres
 ```
 
 Options:
@@ -304,7 +321,21 @@ docker-compose logs -f webserver
 
 ### Database Upgrades
 
-If upgrading PostgreSQL versions, see `upgrade_readme.md` for migration instructions.
+When upgrading PostgreSQL versions, you'll need to migrate your data. The basic process:
+
+1. **Export data from old version:**
+   ```bash
+   docker exec -it <old-postgres-container> pg_dumpall -U postgres > export/dump.sql
+   ```
+
+2. **Update docker-compose.yml** to use new PostgreSQL version
+
+3. **Import data to new version:**
+   ```bash
+   docker exec -i <new-postgres-container> psql -U postgres < export/dump.sql
+   ```
+
+For detailed PostgreSQL upgrade instructions, see the [official documentation](https://www.postgresql.org/docs/current/upgrading.html).
 
 ## Troubleshooting
 
