@@ -85,7 +85,7 @@ services:
       PAPERLESS_WEBHOOK_AUTH_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMTY0N2M3Yi0xMzVlLTQ1M2QtOTU1NC0xMTQ2MGQzZWYwZDgiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY2NTA4MTQxLCJleHAiOjE3NjkwMzY0MDB9.NxsTr_shz33nBkfrvBBVclGl0mimE_G5xyRJbaIqDfM
 
   gotenberg:
-    image: docker.io/gotenberg/gotenberg:8.24
+    image: docker.io/gotenberg/gotenberg:8.27
     restart: unless-stopped
 
     # The gotenberg chromium route is used to convert .eml files. We do not
